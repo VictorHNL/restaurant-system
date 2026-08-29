@@ -2,18 +2,36 @@ from fastapi import HTTPException
 
 from app.data.orders import orders
 from app.clients.product_client import get_product
+import logging
+
+
+logger = logging.getLogger("order-service")
 
 
 def create_order(product_id: int, quantity: int):
+    logger.info(
+        "Creating order - product_id=%s quantity=%s",
+        product_id,
+        quantity
+    )
     try:
         product = get_product(product_id)
     except RuntimeError:
+        logger.error(
+            "Product Service unavailable - product_id=%s",
+            product_id
+        )
+
         raise HTTPException(
             status_code=503,
             detail="Product Service is unavailable"
         )
 
     if product is None:
+        logger.warning(
+            "Product not found - product_id=%s",
+            product_id
+        )
         raise HTTPException(
             status_code=404,
             detail="Product not found"
