@@ -1,5 +1,9 @@
+import { Link } from "react-router-dom";
+
 import "./Home.css";
 import Header from "../../components/Header/Header";
+
+import { useCart } from "../../contexts/CartContext";
 
 import heroImage from "../../assets/hero.jpg";
 import burgersImage from "../../assets/cat-burgers.jpg";
@@ -38,35 +42,44 @@ const categories = [
 
 const featuredProducts = [
   {
+    id: 1,
     name: "Le Maître Signature",
     description:
       "Blend 200g, cheddar inglês maturado, cebola caramelizada e maionese de trufa.",
-    price: "R$ 54,90",
+    price: 54.9,
+    category: "Hambúrgueres",
     image: burgersImage,
   },
   {
+    id: 4,
     name: "Margherita di Napoli",
     description:
       "San Marzano, fior di latte, manjericão fresco e azeite extravirgem.",
-    price: "R$ 62,00",
+    price: 62,
+    category: "Pizzas",
     image: pizzasImage,
   },
   {
+    id: 7,
     name: "Batata Rústica Trufada",
     description:
       "Batatas rústicas, azeite de trufa e parmesão ralado na hora.",
-    price: "R$ 34,00",
+    price: 34,
+    category: "Porções",
     image: portionsImage,
   },
 ];
 
 function Home() {
+  const { addToCart } = useCart();
+
   return (
     <>
       <Header />
 
       <main>
         {/* HERO */}
+
         <section
           className="hero"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -88,23 +101,26 @@ function Home() {
             </p>
 
             <div className="hero-buttons">
-              <a href="/cardapio" className="button primary">
+              <Link to="/cardapio" className="button primary">
                 Ver cardápio
-              </a>
+              </Link>
 
-              <a href="/login" className="button secondary">
+              <Link to="/login" className="button secondary">
                 Entrar
-              </a>
+              </Link>
             </div>
           </div>
         </section>
 
         {/* DIFERENCIAIS */}
+
         <section className="features section-container">
 
           <div className="feature-card">
             <span className="feature-icon">♨</span>
+
             <h3>Cozinha autoral</h3>
+
             <p>
               Receitas assinadas pelo chef, com ingredientes
               selecionados diariamente.
@@ -113,7 +129,9 @@ function Home() {
 
           <div className="feature-card">
             <span className="feature-icon">◷</span>
+
             <h3>Pronto em 30 min</h3>
+
             <p>
               Fluxo de cozinha otimizado para entregar seu
               pedido quente e no ponto.
@@ -122,7 +140,9 @@ function Home() {
 
           <div className="feature-card">
             <span className="feature-icon">✣</span>
+
             <h3>Acompanhe em tempo real</h3>
+
             <p>
               Do pagamento à retirada, veja cada etapa do seu
               pedido pelo site.
@@ -132,10 +152,13 @@ function Home() {
         </section>
 
         {/* CATEGORIAS */}
+
         <section className="section-container categories-section">
 
           <div className="section-heading">
-            <span className="eyebrow">CATEGORIAS POPULARES</span>
+            <span className="eyebrow">
+              CATEGORIAS POPULARES
+            </span>
 
             <h2>Escolha por onde começar</h2>
 
@@ -146,31 +169,40 @@ function Home() {
           </div>
 
           <div className="categories-grid">
+
             {categories.map((category) => (
-              <a
-                href="/cardapio"
+              <Link
+                to="/cardapio"
                 className="category-card"
                 key={category.name}
               >
-                <img src={category.image} alt={category.name} />
+                <img
+                  src={category.image}
+                  alt={category.name}
+                />
 
                 <div className="category-overlay" />
 
                 <div className="category-content">
                   <h3>{category.name}</h3>
+
                   <p>{category.description}</p>
                 </div>
-              </a>
+              </Link>
             ))}
+
           </div>
 
         </section>
 
         {/* PRODUTOS */}
+
         <section className="section-container products-section">
 
           <div className="section-heading">
-            <span className="eyebrow">PRODUTOS EM DESTAQUE</span>
+            <span className="eyebrow">
+              PRODUTOS EM DESTAQUE
+            </span>
 
             <h2>Os favoritos da casa</h2>
 
@@ -180,8 +212,12 @@ function Home() {
           </div>
 
           <div className="products-grid">
+
             {featuredProducts.map((product) => (
-              <article className="product-card" key={product.name}>
+              <article
+                className="product-card"
+                key={product.id}
+              >
 
                 <img
                   src={product.image}
@@ -189,21 +225,33 @@ function Home() {
                 />
 
                 <div className="product-info">
+
                   <h3>{product.name}</h3>
 
                   <p>{product.description}</p>
 
                   <div className="product-bottom">
-                    <span>{product.price}</span>
 
-                    <button>
+                    <span>
+                      {product.price.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </span>
+
+                    <button
+                      onClick={() => addToCart(product)}
+                    >
                       + &nbsp; Adicionar
                     </button>
+
                   </div>
+
                 </div>
 
               </article>
             ))}
+
           </div>
 
         </section>

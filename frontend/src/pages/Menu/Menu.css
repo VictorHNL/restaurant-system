@@ -203,22 +203,60 @@
 }
 
 .menu-product-bottom button {
-  padding: 8px 12px;
+  border: 1px solid #e5b74b;
 
-  border: 0;
+  padding: 8px 13px;
+
   border-radius: 5px;
 
-  background: #e5b74b;
-  color: #17100b;
+  background: transparent;
+
+  color: #e5b74b;
 
   font-size: 10px;
+  font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
+
+/* Mouse em cima */
+
+.menu-product-bottom button:hover:not(:disabled) {
+  background: #e5b74b;
+
+  color: #17100b;
+
+  transform: translateY(-2px) scale(1.03);
+
+  box-shadow: 0 5px 15px rgba(229, 183, 75, 0.18);
+}
+
+/* Clique */
+
+.menu-product-bottom button:active:not(:disabled) {
+  transform: translateY(0) scale(0.94);
+
+  box-shadow: none;
+}
+
+/* Produto indisponível */
 
 .menu-product-bottom button:disabled {
   opacity: 0.35;
+
   cursor: not-allowed;
+
+  border-color: #6d625b;
+
+  color: #6d625b;
+
+  background: transparent;
 }
 
 .unavailable {

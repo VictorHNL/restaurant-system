@@ -12,6 +12,7 @@ main {
 
 .hero {
   min-height: 560px;
+
   position: relative;
 
   background-size: cover;
@@ -41,9 +42,11 @@ main {
 
 .hero-content {
   position: relative;
+
   z-index: 1;
 
   width: min(900px, calc(100% - 40px));
+
   margin: 50px auto 0;
 }
 
@@ -53,7 +56,9 @@ main {
   color: #e5b74b;
 
   font-size: 9px;
+
   font-weight: 600;
+
   letter-spacing: 3px;
 }
 
@@ -61,7 +66,9 @@ main {
   margin: 22px 0 16px;
 
   font-family: Georgia, "Times New Roman", serif;
+
   font-size: clamp(48px, 7vw, 68px);
+
   font-weight: 400;
 
   color: #e9c261;
@@ -73,17 +80,23 @@ main {
   color: #c4bab2;
 
   font-size: 14px;
+
   line-height: 1.8;
 }
 
 .hero-buttons {
   display: flex;
+
   gap: 10px;
 
   margin-top: 28px;
 }
 
+/* BOTÕES DO HERO */
+
 .button {
+  display: inline-block;
+
   padding: 11px 26px;
 
   border-radius: 5px;
@@ -91,29 +104,78 @@ main {
   text-decoration: none;
 
   font-size: 12px;
+
   font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+/* VER CARDÁPIO */
 
 .button.primary {
   background: #e5b74b;
+
   color: #120d08;
 }
 
+.button.primary:hover {
+  transform: translateY(-2px) scale(1.03);
+
+  background: #f0c866;
+
+  box-shadow: 0 6px 18px rgba(229, 183, 75, 0.2);
+}
+
+.button.primary:active {
+  transform: translateY(0) scale(0.96);
+
+  box-shadow: none;
+}
+
+/* ENTRAR */
+
 .button.secondary {
   border: 1px solid #4a413b;
+
   color: #eee7df;
+
+  background: transparent;
+}
+
+.button.secondary:hover {
+  transform: translateY(-2px) scale(1.03);
+
+  border-color: #e5b74b;
+
+  color: #e5b74b;
+
+  background: rgba(229, 183, 75, 0.05);
+}
+
+.button.secondary:active {
+  transform: translateY(0) scale(0.96);
 }
 
 /* FEATURES */
 
 .features {
   display: grid;
+
   grid-template-columns: repeat(3, 1fr);
+
   gap: 16px;
 
   margin-top: -25px;
 
   position: relative;
+
   z-index: 2;
 }
 
@@ -125,19 +187,43 @@ main {
   background: #18110e;
 
   border: 1px solid #302722;
+
   border-radius: 10px;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #5a4934;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
 }
 
 .feature-icon {
   color: #e5b74b;
+
   font-size: 20px;
+
+  transition:
+    transform 0.25s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1);
 }
 
 .feature-card h3 {
   margin: 14px 0 7px;
 
   font-family: Georgia, serif;
+
   font-size: 17px;
+
   font-weight: 400;
 }
 
@@ -147,6 +233,7 @@ main {
   color: #a99e96;
 
   font-size: 11px;
+
   line-height: 1.6;
 }
 
@@ -165,7 +252,9 @@ main {
   margin: 10px 0 8px;
 
   font-family: Georgia, serif;
+
   font-size: 28px;
+
   font-weight: 400;
 
   color: #eee7df;
@@ -197,9 +286,27 @@ main {
   overflow: hidden;
 
   border: 1px solid #302722;
+
   border-radius: 10px;
 
   text-decoration: none;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #5a4934;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.category-card:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
 .category-card:nth-child(4),
@@ -209,11 +316,13 @@ main {
 
 .category-card img {
   width: 100%;
+
   height: 100%;
 
   object-fit: cover;
 
-  transition: transform 0.4s;
+  transition:
+    transform 0.4s ease;
 }
 
 .category-card:hover img {
@@ -222,25 +331,49 @@ main {
 
 .category-overlay {
   position: absolute;
+
   inset: 0;
 
-  background: linear-gradient(
-    transparent 25%,
-    rgba(10, 6, 4, 0.9) 100%
-  );
+  background:
+    linear-gradient(
+      transparent 25%,
+      rgba(10, 6, 4, 0.9) 100%
+    );
+
+  transition:
+    background 0.3s ease;
+}
+
+.category-card:hover .category-overlay {
+  background:
+    linear-gradient(
+      transparent 15%,
+      rgba(10, 6, 4, 0.94) 100%
+    );
 }
 
 .category-content {
   position: absolute;
+
   bottom: 16px;
+
   left: 16px;
+
+  transition:
+    transform 0.25s ease;
+}
+
+.category-card:hover .category-content {
+  transform: translateY(-2px);
 }
 
 .category-content h3 {
   margin: 0 0 4px;
 
   font-family: Georgia, serif;
+
   font-size: 19px;
+
   font-weight: 400;
 
   color: #eee7df;
@@ -272,14 +405,36 @@ main {
   background: #18110e;
 
   border: 1px solid #302722;
+
   border-radius: 9px;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #5a4934;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 .product-card img {
   width: 100%;
+
   height: 220px;
 
   object-fit: cover;
+
+  transition:
+    transform 0.4s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.03);
 }
 
 .product-info {
@@ -290,7 +445,9 @@ main {
   margin: 0 0 8px;
 
   font-family: Georgia, serif;
+
   font-size: 16px;
+
   font-weight: 400;
 }
 
@@ -302,12 +459,15 @@ main {
   color: #a99e96;
 
   font-size: 10px;
+
   line-height: 1.6;
 }
 
 .product-bottom {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   margin-top: 15px;
@@ -317,26 +477,52 @@ main {
   color: #e5b74b;
 
   font-family: Georgia, serif;
+
   font-size: 15px;
 }
+
+/* BOTÃO ADICIONAR */
 
 .product-bottom button {
   padding: 8px 12px;
 
   border: 0;
+
   border-radius: 5px;
 
   background: #e5b74b;
+
   color: #17100b;
 
   font-size: 10px;
+
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.product-bottom button:hover {
+  transform: translateY(-2px) scale(1.04);
+
+  background: #f0c866;
+
+  box-shadow: 0 5px 15px rgba(229, 183, 75, 0.18);
+}
+
+.product-bottom button:active {
+  transform: translateY(0) scale(0.94);
+
+  box-shadow: none;
 }
 
 /* RESPONSIVE */
 
 @media (max-width: 750px) {
-
   .features {
     grid-template-columns: 1fr;
   }
@@ -355,7 +541,6 @@ main {
 }
 
 @media (max-width: 500px) {
-
   .categories-grid {
     grid-template-columns: 1fr;
   }

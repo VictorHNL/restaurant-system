@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
+
 import Header from "../../components/Header/Header";
+import { useCart } from "../../contexts/CartContext";
+
 import "./Menu.css";
 
 import burgersImage from "../../assets/cat-burgers.jpg";
@@ -149,6 +152,8 @@ const categories: Category[] = [
 ];
 
 function Menu() {
+  const { addToCart } = useCart();
+
   const [selectedCategory, setSelectedCategory] =
     useState<Category>("Todos");
 
@@ -177,10 +182,6 @@ function Menu() {
     });
   }
 
-  function handleAddProduct(product: Product) {
-    console.log("Produto adicionado:", product);
-  }
-
   return (
     <>
       <Header />
@@ -204,7 +205,9 @@ function Menu() {
               type="text"
               placeholder="⌕  Buscar no cardápio..."
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) =>
+                setSearch(event.target.value)
+              }
             />
           </div>
 
@@ -218,7 +221,9 @@ function Menu() {
                     ? "category-button active"
                     : "category-button"
                 }
-                onClick={() => setSelectedCategory(category)}
+                onClick={() =>
+                  setSelectedCategory(category)
+                }
               >
                 {category}
               </button>
@@ -292,7 +297,9 @@ function Menu() {
 
                       <button
                         disabled={!product.available}
-                        onClick={() => handleAddProduct(product)}
+                        onClick={() =>
+                          addToCart(product)
+                        }
                       >
                         + &nbsp; Adicionar
                       </button>

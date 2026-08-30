@@ -1,19 +1,47 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+import { CartProvider } from "./contexts/CartContext";
+
+import CartNotification from "./components/CartNotification/CartNotification";
 
 import Home from "./pages/Home/Home";
 import Menu from "./pages/Menu/Menu";
+import Cart from "./pages/Cart/Cart";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <CartProvider>
 
-        <Route path="/" element={<Home />} />
+      <BrowserRouter>
 
-        <Route path="/cardapio" element={<Menu />} />
+        <CartNotification />
 
-      </Routes>
-    </BrowserRouter>
+        <Routes>
+
+          <Route
+            path="/"
+            element={<Home />}
+          />
+
+          <Route
+            path="/cardapio"
+            element={<Menu />}
+          />
+
+          <Route
+            path="/carrinho"
+            element={<Cart />}
+          />
+
+        </Routes>
+
+      </BrowserRouter>
+
+    </CartProvider>
   );
 }
 
