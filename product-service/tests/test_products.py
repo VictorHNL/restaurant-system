@@ -1,6 +1,16 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.repositories import product_repository
+from copy import deepcopy
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def restore_products():
+    original = deepcopy(product_repository.products)
+    yield
+    product_repository.products[:] = original
 
 
 client = TestClient(app)
@@ -55,7 +65,7 @@ def test_get_product_by_id():
     data = response.json()
 
     assert data["id"] == 1
-    assert data["name"] == "Hambúrguer"
+    assert data["name"] == "Le Maître Signature"
 
 def test_get_product_not_found():
     response = client.get("/products/999")

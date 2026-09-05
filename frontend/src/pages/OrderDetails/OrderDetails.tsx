@@ -1,239 +1,42 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
+import { getOrder, money } from "../../services/orderService";
+import { errorMessage } from "../../services/api";
+import type { Order } from "../../types/Order";
 import "./OrderDetails.css";
 
-const orderItems = [
-  {
-    name: "Le Maître Signature",
-    quantity: 1,
-    price: 54.9,
-  },
-  {
-    name: "Double Brasa",
-    quantity: 1,
-    price: 48.5,
-  },
-  {
-    name: "Margherita di Napoli",
-    quantity: 1,
-    price: 62.0,
-  },
-  {
-    name: "Pepperoni Picante",
-    quantity: 1,
-    price: 68.0,
-  },
-  {
-    name: "Negroni da Casa",
-    quantity: 1,
-    price: 32.0,
-  },
-  {
-    name: "Petit Gâteau",
-    quantity: 1,
-    price: 29.0,
-  },
-];
-
-const statusSteps = [
-  {
-    title: "Criado",
-    description: "Recebemos seu pedido.",
-    completed: true,
-  },
-  {
-    title: "Pagamento pendente",
-    description: "Aguardando a confirmação do pagamento.",
-    completed: true,
-  },
-  {
-    title: "Pago",
-    description: "Pagamento aprovado.",
-    completed: true,
-  },
-  {
-    title: "Em preparação",
-    description: "A cozinha está preparando tudo.",
-    completed: true,
-  },
-  {
-    title: "Pronto",
-    description: "Seu pedido está pronto para retirada/entrega.",
-    completed: true,
-  },
-  {
-    title: "Finalizado",
-    description: "Pedido concluído. Bom apetite!",
-    completed: true,
-  },
-];
-
-function OrderDetails() {
+export default function OrderDetails() {
   const { id } = useParams();
-
-  const orderNumber = id || "1003";
-
-  const total = orderItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
-  return (
-    <>
-      <Header />
-
-      <main className="order-details-page">
-        <div className="order-details-container">
-
-          {/* CABEÇALHO */}
-          <div className="order-details-header">
-
-            <div>
-              <span className="order-eyebrow">
-                ACOMPANHAMENTO
-              </span>
-
-              <h1>Pedido #{orderNumber}</h1>
-
-              <p>
-                Criado em 28/08/2026, 00:31
-              </p>
-            </div>
-
-            <span className="order-status">
-              Finalizado
-            </span>
-
-          </div>
-
-          {/* CONTEÚDO */}
-          <div className="order-details-content">
-
-            {/* STATUS */}
-            <section className="status-card">
-
-              <h2>Status do pedido</h2>
-
-              <div className="status-list">
-
-                {statusSteps.map((step, index) => (
-                  <div
-                    className={`status-step ${
-                      index === statusSteps.length - 1
-                        ? "last"
-                        : ""
-                    }`}
-                    key={step.title}
-                  >
-
-                    <div className="status-marker">
-                      {index === statusSteps.length - 1
-                        ? "◔"
-                        : "✓"}
-                    </div>
-
-                    <div className="status-line" />
-
-                    <div className="status-info">
-
-                      <strong>
-                        {step.title}
-                      </strong>
-
-                      <span>
-                        {step.description}
-                      </span>
-
-                    </div>
-
-                  </div>
-                ))}
-
-              </div>
-
-            </section>
-
-            {/* ITENS */}
-            <aside className="items-card">
-
-              <h2>Itens</h2>
-
-              <div className="order-items">
-
-                {orderItems.map((item) => (
-                  <div
-                    className="order-item"
-                    key={item.name}
-                  >
-
-                    <span>
-                      {item.quantity}x {item.name}
-                    </span>
-
-                    <strong>
-                      R${" "}
-                      {(item.price * item.quantity)
-                        .toFixed(2)
-                        .replace(".", ",")}
-                    </strong>
-
-                  </div>
-                ))}
-
-              </div>
-
-              <div className="items-divider" />
-
-              <div className="order-total">
-
-                <span>Total</span>
-
-                <strong>
-                  R$ {total.toFixed(2).replace(".", ",")}
-                </strong>
-
-              </div>
-
-              <Link
-                to="/pedidos"
-                className="all-orders-button"
-              >
-                Ver todos os pedidos
-              </Link>
-
-            </aside>
-
-          </div>
-
-        </div>
-      </main>
-
-      {/* FOOTER */}
-      <footer className="order-footer">
-
-        <div className="order-footer-container">
-
-          <div>
-            <div className="footer-logo">
-              Le Maître
-            </div>
-
-            <p>
-              Cozinha autoral servida todos os dias,
-              das 18h às 00h. Rua das Oliveiras, 240.
-            </p>
-          </div>
-
-          <span>
-            Projeto acadêmico — Sistemas Distribuídos e
-            Qualidade de Software.
-          </span>
-
-        </div>
-
-      </footer>
-    </>
-  );
+  const [order, setOrder] = useState<Order | null>(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    if (id) getOrder(id).then(data => { if(active) setOrder(data); })
+      .catch(e => { if(active) setError(errorMessage(e)); });
+    return () => { active = false; };
+  }, [id]);
+  return <><Header /><main className="order-details-page"><div className="order-details-container">
+    {error && <p role="alert">{error}</p>}
+    {!order && !error && <p role="status">Carregando pedido…</p>}
+    {order && <>
+      <div className="order-details-header"><div><span className="order-eyebrow">ACOMPANHAMENTO</span>
+        <h1>Pedido #{order.id}</h1><p>Criado em {new Date(order.created_at).toLocaleString("pt-BR")}</p></div>
+        <span className="order-status">{order.status === "CRIADO" ? "Criado" : order.status}</span></div>
+      <div className="order-details-content">
+        <section className="status-card"><h2>Status do pedido</h2>
+          <div className="status-list"><div className="status-step last">
+            <div className="status-marker">✓</div><div className="status-info">
+              <strong>Pedido recebido</strong><span>Os itens foram registrados com sucesso.</span>
+            </div></div></div>
+        </section>
+        <aside className="items-card"><h2>Itens</h2><div className="order-items">{order.items.map(item =>
+          <div className="order-item" key={item.product_id}><span>{item.quantity}x {item.name}</span>
+            <strong>{money(item.subtotal)}</strong></div>
+        )}</div><div className="items-divider" /><div className="order-total"><span>Total</span><strong>{money(order.total)}</strong></div>
+        </aside>
+      </div>
+    </>}
+    <Link to="/pedidos" className="all-orders-button">Ver todos os pedidos</Link>
+  </div></main></>;
 }
-
-export default OrderDetails;

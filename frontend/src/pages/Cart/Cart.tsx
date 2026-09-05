@@ -1,10 +1,33 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
+import { createOrder } from "../../services/orderService";
+import { errorMessage } from "../../services/api";
 import Header from "../../components/Header/Header";
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from "../../contexts/cart";
 
 import "./Cart.css";
 
 function Cart() {
+  const navigate = useNavigate();
+  const submitting = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function checkout() {
+    if (submitting.current) return;
+    submitting.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      const order = await createOrder(items.map(item => ({ product_id: item.product.id, quantity: item.quantity })));
+      clearCart();
+      navigate("/pedidos/" + order.id);
+    } catch (e) {
+      setError(errorMessage(e));
+    } finally {
+      submitting.current = false;
+      setBusy(false);
+    }
+  }
   const {
     items,
     totalItems,
@@ -109,6 +132,7 @@ function Cart() {
                       <div className="quantity">
 
                         <button
+                          disabled={busy}
                           onClick={() =>
                             decreaseQuantity(
                               item.product.id
@@ -123,6 +147,7 @@ function Cart() {
                         </span>
 
                         <button
+                          disabled={busy}
                           onClick={() =>
                             addToCart(item.product)
                           }
@@ -133,6 +158,7 @@ function Cart() {
                       </div>
 
                       <button
+                        disabled={busy}
                         className="remove-button"
                         onClick={() =>
                           removeFromCart(
@@ -182,8 +208,9 @@ function Cart() {
                   </strong>
                 </div>
 
-                <button className="checkout-button">
-                  Finalizar pedido
+                {error && <p role="alert">{error}</p>}
+                <button className="checkout-button" disabled={busy} onClick={checkout}>
+                  {busy ? "Enviando pedido…" : "Finalizar pedido"}
                 </button>
 
                 <Link
@@ -194,6 +221,7 @@ function Cart() {
                 </Link>
 
                 <button
+                  disabled={busy}
                   className="clear-button"
                   onClick={clearCart}
                 >

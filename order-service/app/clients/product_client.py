@@ -1,7 +1,8 @@
 import httpx
+import os
 
 
-PRODUCT_SERVICE_URL = "http://product-service:8000"
+PRODUCT_SERVICE_URL = os.getenv("PRODUCT_SERVICE_URL", "http://localhost:8000")
 
 
 def get_product(product_id: int):
@@ -18,5 +19,5 @@ def get_product(product_id: int):
 
         return response.json()
 
-    except httpx.RequestError:
+    except (httpx.HTTPError, ValueError):
         raise RuntimeError("Product Service is unavailable")

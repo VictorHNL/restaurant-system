@@ -1,40 +1,10 @@
 import {
-  createContext,
-  useContext,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 
-export interface CartProduct {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-}
-
-export interface CartItem {
-  product: CartProduct;
-  quantity: number;
-}
-
-interface CartContextData {
-  items: CartItem[];
-  totalItems: number;
-  totalPrice: number;
-  notification: string | null;
-
-  addToCart: (product: CartProduct) => void;
-  removeFromCart: (productId: number) => void;
-  decreaseQuantity: (productId: number) => void;
-  clearCart: () => void;
-}
-
-const CartContext = createContext<CartContextData | undefined>(
-  undefined
-);
+import { CartContext, type CartProduct, type CartItem } from "./cart";
 
 interface CartProviderProps {
   children: ReactNode;
@@ -141,16 +111,4 @@ export function CartProvider({
       {children}
     </CartContext.Provider>
   );
-}
-
-export function useCart() {
-  const context = useContext(CartContext);
-
-  if (!context) {
-    throw new Error(
-      "useCart deve ser utilizado dentro de CartProvider"
-    );
-  }
-
-  return context;
 }

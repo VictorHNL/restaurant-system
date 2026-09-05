@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 
 import "./Home.css";
+import { useProducts } from "../../hooks/useProducts";
 import Header from "../../components/Header/Header";
 
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from "../../contexts/cart";
 
 import heroImage from "../../assets/hero.jpg";
 import burgersImage from "../../assets/cat-burgers.jpg";
@@ -40,37 +41,9 @@ const categories = [
   },
 ];
 
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Le Maître Signature",
-    description:
-      "Blend 200g, cheddar inglês maturado, cebola caramelizada e maionese de trufa.",
-    price: 54.9,
-    category: "Hambúrgueres",
-    image: burgersImage,
-  },
-  {
-    id: 4,
-    name: "Margherita di Napoli",
-    description:
-      "San Marzano, fior di latte, manjericão fresco e azeite extravirgem.",
-    price: 62,
-    category: "Pizzas",
-    image: pizzasImage,
-  },
-  {
-    id: 7,
-    name: "Batata Rústica Trufada",
-    description:
-      "Batatas rústicas, azeite de trufa e parmesão ralado na hora.",
-    price: 34,
-    category: "Porções",
-    image: portionsImage,
-  },
-];
-
 function Home() {
+  const { products, loading, error } = useProducts();
+  const featuredProducts = products.filter(p => p.available).slice(0, 3);
   const { addToCart } = useCart();
 
   return (
@@ -211,6 +184,8 @@ function Home() {
             </p>
           </div>
 
+          {loading && <p role="status">Carregando destaques…</p>}
+          {error && <p role="alert">{error}</p>}
           <div className="products-grid">
 
             {featuredProducts.map((product) => (

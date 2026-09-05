@@ -1,148 +1,12 @@
 import { useMemo, useState } from "react";
 
 import Header from "../../components/Header/Header";
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from "../../contexts/cart";
 
 import "./Menu.css";
+import { useProducts } from '../../hooks/useProducts';
 
-import burgersImage from "../../assets/cat-burgers.jpg";
-import pizzasImage from "../../assets/cat-pizzas.jpg";
-import portionsImage from "../../assets/cat-porcoes.jpg";
-import drinksImage from "../../assets/cat-bebidas.jpg";
-import dessertsImage from "../../assets/cat-sobremesa.jpg";
-
-type Category =
-  | "Todos"
-  | "Hambúrgueres"
-  | "Pizzas"
-  | "Porções"
-  | "Bebidas"
-  | "Sobremesas";
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  category: Exclude<Category, "Todos">;
-  image: string;
-  available: boolean;
-}
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Le Maître Signature",
-    description:
-      "Blend 200g, cheddar inglês maturado, cebola caramelizada e maionese de trufa.",
-    price: 54.9,
-    category: "Hambúrgueres",
-    image: burgersImage,
-    available: true,
-  },
-  {
-    id: 2,
-    name: "Double Brasa",
-    description:
-      "Dois smash de 120g, queijo prato, picles e molho da casa.",
-    price: 48.5,
-    category: "Hambúrgueres",
-    image: burgersImage,
-    available: true,
-  },
-  {
-    id: 3,
-    name: "Cogumelo Nobre",
-    description:
-      "Burger de blend suíno, cogumelo paris salteado e queijo gruyère.",
-    price: 51,
-    category: "Hambúrgueres",
-    image: burgersImage,
-    available: false,
-  },
-  {
-    id: 4,
-    name: "Margherita di Napoli",
-    description:
-      "San Marzano, fior di latte, manjericão fresco e azeite extravirgem.",
-    price: 62,
-    category: "Pizzas",
-    image: pizzasImage,
-    available: true,
-  },
-  {
-    id: 5,
-    name: "Quattro Formaggi",
-    description:
-      "Mozzarella, gorgonzola, parmesão e provolone.",
-    price: 68,
-    category: "Pizzas",
-    image: pizzasImage,
-    available: true,
-  },
-  {
-    id: 6,
-    name: "Pepperoni Picante",
-    description:
-      "Pepperoni artesanal, mozzarella e pimenta calabresa.",
-    price: 65,
-    category: "Pizzas",
-    image: pizzasImage,
-    available: true,
-  },
-  {
-    id: 7,
-    name: "Batata Rústica Trufada",
-    description:
-      "Batatas rústicas, azeite de trufa e parmesão ralado na hora.",
-    price: 34,
-    category: "Porções",
-    image: portionsImage,
-    available: true,
-  },
-  {
-    id: 8,
-    name: "Bolinho de Costela",
-    description:
-      "Bolinho crocante de costela acompanhado de molho da casa.",
-    price: 39,
-    category: "Porções",
-    image: portionsImage,
-    available: true,
-  },
-  {
-    id: 9,
-    name: "Negroni da Casa",
-    description:
-      "Gin infusionado, vermute rosso e bitter, com casca de laranja.",
-    price: 32,
-    category: "Bebidas",
-    image: drinksImage,
-    available: true,
-  },
-  {
-    id: 10,
-    name: "Gin Tônica",
-    description:
-      "Gin premium, água tônica e botânicos selecionados.",
-    price: 29,
-    category: "Bebidas",
-    image: drinksImage,
-    available: true,
-  },
-  {
-    id: 11,
-    name: "Petit Gâteau",
-    description:
-      "Chocolate 70% com sorvete de baunilha de Madagascar.",
-    price: 29,
-    category: "Sobremesas",
-    image: dessertsImage,
-    available: true,
-  },
-];
-
-const categories: Category[] = [
+const categories: string[] = [
   "Todos",
   "Hambúrgueres",
   "Pizzas",
@@ -152,10 +16,11 @@ const categories: Category[] = [
 ];
 
 function Menu() {
+  const { products, loading, error } = useProducts();
   const { addToCart } = useCart();
 
   const [selectedCategory, setSelectedCategory] =
-    useState<Category>("Todos");
+    useState<string>("Todos");
 
   const [search, setSearch] = useState("");
 
@@ -173,7 +38,7 @@ function Menu() {
 
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, search]);
+  }, [products, selectedCategory, search]);
 
   function formatPrice(price: number) {
     return price.toLocaleString("pt-BR", {
@@ -234,8 +99,10 @@ function Menu() {
         </section>
 
         <section className="menu-products">
+          {loading && <p role="status">Carregando cardápio…</p>}
+          {error && <p role="alert">{error}</p>}
 
-          {filteredProducts.length === 0 ? (
+          {!loading && !error && filteredProducts.length === 0 ? (
             <div className="empty-results">
 
               <h2>Nenhum produto encontrado</h2>

@@ -4,7 +4,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from "../../contexts/cart";
 
 import "./Header.css";
 
