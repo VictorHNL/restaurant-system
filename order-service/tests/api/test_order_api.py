@@ -1,9 +1,11 @@
-import pytest
+import base64, hashlib, hmac, json, pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.data.orders import orders
 
-client = TestClient(app)
+payload = base64.urlsafe_b64encode(json.dumps({"sub": 1}).encode()).decode().rstrip("=")
+signature = hmac.new(b"development-secret-change-in-production", payload.encode(), hashlib.sha256).hexdigest()
+client = TestClient(app, headers={"Authorization": "Bearer " + payload + "." + signature})
 
 @pytest.fixture(autouse=True)
 def clean_orders():
@@ -22,7 +24,7 @@ def test_multiple_items_server_total(products):
     data = response.json()
     assert data["total"] == 40
     assert len(data["items"]) == 2
-    assert data["status"] == "CRIADO"
+    assert data["status"] == "PAGAMENTO_PENDENTE"
     assert client.get(f"/orders/{data['id']}").json() == data
 
 @pytest.mark.parametrize("items", [[], [{"product_id": 1, "quantity": 0}], [{"product_id": 0, "quantity": 1}], [{"product_id": 1, "quantity": 101}]])
@@ -64,7 +66,7 @@ def test_empty_history_and_missing():
 def test_update(products):
     data = client.post("/orders", json={"items": [{"product_id": 1, "quantity": 1}]}).json()
     r = client.put(f"/orders/{data['id']}", json={"items": [{"product_id": 2, "quantity": 2}]})
-    assert r.json()["total"] == 10.2
+    assert r.status_code == 409
 
 def test_health():
     assert client.get("/health").json()["status"] == "healthy"

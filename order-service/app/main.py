@@ -4,6 +4,7 @@ import os
 import logging
 
 from app.routes.order_routes import router
+from app.consumers import start_consumer
 
 
 logging.basicConfig(
@@ -17,6 +18,9 @@ app = FastAPI(title="Order Service")
 app.add_middleware(CORSMiddleware, allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(","), allow_methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type"])
 
 app.include_router(router)
+@app.on_event("startup")
+def start():
+    start_consumer()
 
 
 @app.get("/")

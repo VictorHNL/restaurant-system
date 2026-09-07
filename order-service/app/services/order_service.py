@@ -5,6 +5,7 @@ from threading import Lock
 from fastapi import HTTPException
 from app.data.orders import orders
 from app.clients.product_client import get_product
+from app.events import publish
 
 _ids = count(1)
 _lock = Lock()
@@ -30,17 +31,42 @@ def _resolve_items(items):
             quantity=quantity, unit_price=float(price), subtotal=float(price * quantity)))
     return resolved
 
-def create_order(items):
+def create_order(items, user_id: int):
     resolved = _resolve_items(items)
     with _lock:
         order = dict(id=next(_ids), items=resolved,
             total=float(sum(Decimal(str(item["subtotal"])) for item in resolved)),
-            status="CRIADO", created_at=datetime.now(timezone.utc).isoformat())
+            status="PAGAMENTO_PENDENTE", user_id=user_id, created_at=datetime.now(timezone.utc).isoformat())
         orders.append(order)
+    publish("order.created", order)
     return order
 
 def get_all_orders():
     return list(reversed(orders))
+
+def update_payment_status(order_id: int, payment_status: str):
+    order = get_order_by_id(order_id)
+    if payment_status == "APPROVED":
+        order["status"] = "EM_PREPARACAO"
+    elif payment_status == "DECLINED":
+        order["status"] = "CANCELADO"
+    else:
+        order["status"] = "PAGAMENTO_PENDENTE"
+    publish("order.status.updated", {"order_id": order_id, "status": order["status"]})
+    return order
+
+def advance_status(order_id: int, status: str):
+    allowed = {
+        "EM_PREPARACAO": {"PRONTO", "CANCELADO"},
+        "PRONTO": {"FINALIZADO"},
+        "PAGAMENTO_PENDENTE": {"CANCELADO"},
+    }
+    order = get_order_by_id(order_id)
+    if status not in allowed.get(order["status"], set()):
+        raise HTTPException(409, "Transição de status não permitida")
+    order["status"] = status
+    publish("order.status.updated", {"order_id": order_id, "status": status})
+    return order
 
 def get_order_by_id(order_id):
     for order in orders:

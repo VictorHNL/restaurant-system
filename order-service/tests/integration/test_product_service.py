@@ -1,7 +1,15 @@
 import httpx
+import pytest
 
 
 PRODUCT_SERVICE_URL = "http://localhost:8000"
+
+@pytest.fixture(autouse=True)
+def available():
+    try:
+        httpx.get(PRODUCT_SERVICE_URL + "/health", timeout=1).raise_for_status()
+    except httpx.HTTPError:
+        pytest.skip("Product Service não está em execução")
 
 
 def test_product_service_is_available():

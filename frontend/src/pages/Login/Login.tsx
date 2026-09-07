@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { authError, login } from "../../services/authService";
 
 import "./Login.css";
 
@@ -13,7 +14,8 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const [busy, setBusy] = useState(false);
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError("");
@@ -28,7 +30,10 @@ function Login() {
       return;
     }
 
-    navigate("/");
+    setBusy(true);
+    try { await login(email, password); navigate("/"); }
+    catch (requestError) { setError(authError(requestError)); }
+    finally { setBusy(false); }
   }
 
   return (
@@ -137,8 +142,9 @@ function Login() {
             <button
               type="submit"
               className="login-button"
+              disabled={busy}
             >
-              Entrar
+              {busy ? "Entrando…" : "Entrar"}
             </button>
 
           </form>

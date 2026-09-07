@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { authError, register } from "../../services/authService";
 
 import "./Register.css";
 
@@ -43,7 +44,8 @@ function Register() {
     )}-${numbers.slice(7, 11)}`;
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const [busy, setBusy] = useState(false);
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError("");
@@ -76,7 +78,10 @@ function Register() {
       return;
     }
 
-    navigate("/login");
+    setBusy(true);
+    try { await register(name, email, password); navigate("/"); }
+    catch (requestError) { setError(authError(requestError)); }
+    finally { setBusy(false); }
   }
 
   return (
@@ -273,8 +278,9 @@ function Register() {
             <button
               type="submit"
               className="register-button"
+              disabled={busy}
             >
-              Criar conta
+              {busy ? "Criando conta…" : "Criar conta"}
             </button>
 
           </form>

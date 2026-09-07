@@ -1,10 +1,11 @@
-import { ShoppingBag, UserRound } from "lucide-react";
+import { LogOut, ShoppingBag, UserRound } from "lucide-react";
 import {
   Link,
   useLocation,
 } from "react-router-dom";
 
 import { useCart } from "../../contexts/cart";
+import { logout, session } from "../../services/authService";
 
 import "./Header.css";
 
@@ -12,6 +13,7 @@ function Header() {
   const { totalItems } = useCart();
 
   const location = useLocation();
+  const currentUser = session();
 
   return (
     <header className="header">
@@ -79,14 +81,15 @@ function Header() {
           </Link>
 
           <Link
-            to="/login"
+            to={currentUser ? "/" : "/login"}
             className="account-link"
-            aria-label="Minha conta"
+            aria-label={currentUser ? "Sair da conta" : "Minha conta"}
+            onClick={currentUser ? logout : undefined}
           >
-            <UserRound
+            {currentUser ? <LogOut
               size={18}
               strokeWidth={1.5}
-            />
+            /> : <UserRound size={18} strokeWidth={1.5} />}
           </Link>
 
         </div>

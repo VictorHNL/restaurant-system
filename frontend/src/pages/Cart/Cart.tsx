@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { createOrder } from "../../services/orderService";
 import { errorMessage } from "../../services/api";
+import { session } from "../../services/authService";
 import Header from "../../components/Header/Header";
 import { useCart } from "../../contexts/cart";
 
@@ -13,6 +14,7 @@ function Cart() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function checkout() {
+    if (!session()) { navigate("/login"); return; }
     if (submitting.current) return;
     submitting.current = true;
     setBusy(true);

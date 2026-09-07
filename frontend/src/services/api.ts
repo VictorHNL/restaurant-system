@@ -1,6 +1,11 @@
 import axios from "axios";
 export const productsApi = axios.create({ baseURL: import.meta.env.VITE_PRODUCT_API_URL || "http://localhost:8000", timeout: 8000 });
 export const ordersApi = axios.create({ baseURL: import.meta.env.VITE_ORDER_API_URL || "http://localhost:8001", timeout: 15000 });
+ordersApi.interceptors.request.use(config => {
+  const raw = localStorage.getItem("le-maitre-session");
+  if (raw) config.headers.Authorization = "Bearer " + JSON.parse(raw).token;
+  return config;
+});
 export function errorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const detail = error.response?.data?.detail;

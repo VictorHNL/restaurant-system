@@ -20,3 +20,4 @@ class OrderResponse(BaseModel):
     total: float
     status: str
     created_at: str
+    user_id: int
