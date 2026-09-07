@@ -38,7 +38,14 @@ Com Docker em execução, o painel do RabbitMQ está disponível em `http://loca
 Com Docker Desktop aberto, na raiz do projeto execute:
 
 ```powershell
-docker compose up --build
+docker compose up --build -d
+```
+
+O Docker inicia os microsserviços e o RabbitMQ. Em outro terminal, inicie o frontend:
+
+```powershell
+cd frontend
+npm.cmd run dev -- --host 127.0.0.1 --port 5173
 ```
 
 Depois abra `http://127.0.0.1:5173`.
