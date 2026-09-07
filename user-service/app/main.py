@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr, Field
 SECRET = os.getenv("JWT_SECRET", "development-secret-change-in-production").encode()
 users: dict[str, dict] = {}
 app = FastAPI(title="User Service")
-app.add_middleware(CORSMiddleware, allow_origins=os.getenv("CORS_ORIGINS","http://localhost:5173").split(","), allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=os.getenv("CORS_ORIGINS","http://localhost:5173,http://127.0.0.1:5173").split(","), allow_methods=["*"], allow_headers=["*"])
 
 class Register(BaseModel):
     name: str = Field(min_length=2, max_length=100)

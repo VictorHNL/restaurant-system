@@ -325,3 +325,14 @@
     align-items: center;
   }
 }
+.checkout-login-required {
+  margin: 16px 0;
+  padding: 14px;
+  border-radius: 8px;
+  background: #fff4e5;
+  color: #5f3b18;
+}
+
+.checkout-login-required span { display: block; margin-top: 4px; }
+.checkout-login-required div { display: flex; gap: 14px; margin-top: 10px; }
+.checkout-login-required a { color: #7a4819; font-weight: 700; }

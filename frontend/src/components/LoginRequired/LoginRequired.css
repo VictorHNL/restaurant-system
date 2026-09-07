@@ -1,0 +1,24 @@
+.login-required {
+  max-width: 620px;
+  margin: 48px auto;
+  padding: 40px;
+  text-align: center;
+  border: 1px solid rgba(184, 132, 61, 0.28);
+  border-radius: 14px;
+  background: #fffdf9;
+}
+
+.login-required-eyebrow {
+  color: #a66c27;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.login-required h1 { margin: 12px 0; }
+.login-required p { color: #605a52; margin: 0 auto 24px; }
+.login-required-actions { display: flex; justify-content: center; gap: 12px; margin-bottom: 22px; }
+.login-required-primary, .login-required-secondary { padding: 11px 20px; border-radius: 7px; text-decoration: none; font-weight: 700; }
+.login-required-primary { color: #fff; background: #1f1712; }
+.login-required-secondary { color: #1f1712; border: 1px solid #1f1712; }
+.login-required-menu { color: #8b5e2b; }

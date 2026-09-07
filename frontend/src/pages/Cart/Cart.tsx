@@ -13,8 +13,12 @@ function Cart() {
   const submitting = useRef(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [loginRequired, setLoginRequired] = useState(false);
   async function checkout() {
-    if (!session()) { navigate("/login"); return; }
+    if (!session()) {
+      setLoginRequired(true);
+      return;
+    }
     if (submitting.current) return;
     submitting.current = true;
     setBusy(true);
@@ -211,6 +215,16 @@ function Cart() {
                 </div>
 
                 {error && <p role="alert">{error}</p>}
+                {loginRequired && (
+                  <div className="checkout-login-required" role="alert">
+                    <strong>Entre para finalizar seu pedido.</strong>
+                    <span> Faça login ou crie uma conta para acompanhar a entrega.</span>
+                    <div>
+                      <Link to="/login">Entrar</Link>
+                      <Link to="/register">Criar conta</Link>
+                    </div>
+                  </div>
+                )}
                 <button className="checkout-button" disabled={busy} onClick={checkout}>
                   {busy ? "Enviando pedido…" : "Finalizar pedido"}
                 </button>

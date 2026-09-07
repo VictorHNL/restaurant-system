@@ -1,22 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/Header/Header";
+import LoginRequired from "../../components/LoginRequired/LoginRequired";
 import { getOrders, money } from "../../services/orderService";
 import { errorMessage } from "../../services/api";
+import { session } from "../../services/authService";
 import type { Order } from "../../types/Order";
 import "./Orders.css";
 
 export default function Orders() {
+  const loggedIn = Boolean(session());
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   useEffect(() => {
+    if (!loggedIn) {
+      return;
+    }
     let active = true;
     getOrders().then(data => { if(active) setOrders(data); })
       .catch(e => { if(active) setError(errorMessage(e)); })
       .finally(() => { if(active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [loggedIn]);
+  if (!loggedIn) return <><Header /><main className="orders-page"><LoginRequired action="ver seus pedidos" /></main></>;
   return <><Header /><main className="orders-page"><div className="orders-container">
     <div className="orders-heading"><span className="orders-eyebrow">HISTÓRICO</span>
       <h1>Pedidos</h1><p>Consulte os pedidos recebidos e seus detalhes.</p></div>

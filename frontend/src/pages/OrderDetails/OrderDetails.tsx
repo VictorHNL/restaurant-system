@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Header from "../../components/Header/Header";
+import LoginRequired from "../../components/LoginRequired/LoginRequired";
 import { getOrder, money } from "../../services/orderService";
 import { errorMessage } from "../../services/api";
+import { session } from "../../services/authService";
 import type { Order } from "../../types/Order";
 import "./OrderDetails.css";
 
 export default function OrderDetails() {
   const { id } = useParams();
+  const loggedIn = Boolean(session());
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
-    if (id) getOrder(id).then(data => { if(active) setOrder(data); })
+    if (loggedIn && id) getOrder(id).then(data => { if(active) setOrder(data); })
       .catch(e => { if(active) setError(errorMessage(e)); });
     return () => { active = false; };
-  }, [id]);
+  }, [id, loggedIn]);
+  if (!loggedIn) return <><Header /><main className="order-details-page"><LoginRequired action="acompanhar este pedido" /></main></>;
   return <><Header /><main className="order-details-page"><div className="order-details-container">
     {error && <p role="alert">{error}</p>}
     {!order && !error && <p role="status">Carregando pedido…</p>}

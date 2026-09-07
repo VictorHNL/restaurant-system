@@ -10,6 +10,7 @@ export function errorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
     const detail = error.response?.data?.detail;
     if (typeof detail === "string") return detail;
+    if (error.response?.status === 401 || error.response?.status === 403) return "Entre ou crie uma conta para continuar.";
     if (error.response?.status === 422) return "Confira os itens e as quantidades do pedido.";
   }
   return "Não foi possível acessar o serviço. Tente novamente em instantes.";
