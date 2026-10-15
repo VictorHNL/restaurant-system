@@ -8,7 +8,7 @@ O projeto possui os seguintes serviços:
 
 | Serviço | Porta local | Responsabilidade |
 | --- | ---: | --- |
-| Frontend | 5173 | Interface React do cliente. |
+| Frontend | 5178 | Interface React do cliente. |
 | Product Service | 8000 | Cardápio, preços e disponibilidade dos produtos. |
 | Order Service | 8001 | Criação, consulta e atualização dos pedidos. |
 | User Service | 8002 | Cadastro, login e emissão do token de acesso. |
@@ -41,14 +41,7 @@ Com Docker Desktop aberto, na raiz do projeto execute:
 docker compose up --build -d
 ```
 
-O Docker inicia os microsserviços e o RabbitMQ. Em outro terminal, inicie o frontend:
-
-```powershell
-cd frontend
-npm.cmd run dev -- --host 127.0.0.1 --port 5173
-```
-
-Depois abra `http://127.0.0.1:5173`.
+O Docker inicia o frontend, os microsserviços e o RabbitMQ. Depois abra `http://127.0.0.1:5178`.
 
 Para encerrar os contêineres:
 
@@ -88,7 +81,7 @@ cd order-service
 
 ```powershell
 cd frontend
-npm.cmd run dev -- --host 127.0.0.1 --port 5173 --strictPort
+npm.cmd run dev -- --host 127.0.0.1 --port 5178 --strictPort
 ```
 
 Sem o Docker, Product, User, Order e Frontend funcionam normalmente. Para usar o processamento assíncrono de pagamentos e notificações, inicie todos os serviços com Docker Compose e RabbitMQ.
