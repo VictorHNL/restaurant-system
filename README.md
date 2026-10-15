@@ -50,6 +50,28 @@ Para encerrar os contêineres:
 docker compose down
 ```
 
+## Visualizar o banco de dados
+
+O PostgreSQL é iniciado pelo Docker Compose; não é necessário instalar o servidor PostgreSQL separadamente. Para navegar pelas tabelas em uma interface gráfica, instale o [DBeaver Community](https://dbeaver.io/download/) e crie uma conexão PostgreSQL com estes dados:
+
+| Campo | Valor |
+| --- | --- |
+| Host | `127.0.0.1` |
+| Porta | `5432` |
+| Banco de dados | `restaurant` |
+| Usuário | `restaurant` |
+| Senha | `restaurant-dev-password` |
+
+Se o DBeaver pedir o driver PostgreSQL, autorize o download. Depois de conectar, abra `Databases > restaurant > Schemas > public > Tables`. As tabelas principais são `products`, `users`, `orders` e `order_items`. O banco precisa estar em execução (`docker compose up -d`); as credenciais acima são somente para desenvolvimento local.
+
+Também é possível acessar o banco pelo terminal:
+
+```powershell
+docker compose exec postgres psql -U restaurant -d restaurant
+```
+
+No prompt do `psql`, execute `\dt` para listar as tabelas e `\q` para sair.
+
 ## Executar sem Docker
 
 Crie o ambiente Python e instale as dependências de cada serviço:
