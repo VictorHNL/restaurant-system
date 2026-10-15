@@ -1,14 +1,9 @@
 from datetime import datetime, timezone
 from decimal import Decimal
-from itertools import count
-from threading import Lock
 from fastapi import HTTPException
-from app.data.orders import orders
 from app.clients.product_client import get_product
 from app.events import publish
-
-_ids = count(1)
-_lock = Lock()
+from app.repositories import order_repository
 
 def _resolve_items(items):
     quantities = {}
@@ -33,16 +28,14 @@ def _resolve_items(items):
 
 def create_order(items, user_id: int):
     resolved = _resolve_items(items)
-    with _lock:
-        order = dict(id=next(_ids), items=resolved,
-            total=float(sum(Decimal(str(item["subtotal"])) for item in resolved)),
-            status="PAGAMENTO_PENDENTE", user_id=user_id, created_at=datetime.now(timezone.utc).isoformat())
-        orders.append(order)
+    order = order_repository.create(resolved,
+        float(sum(Decimal(str(item["subtotal"])) for item in resolved)),
+        "PAGAMENTO_PENDENTE", user_id, datetime.now(timezone.utc))
     publish("order.created", order)
     return order
 
 def get_all_orders():
-    return list(reversed(orders))
+    return order_repository.get_all()
 
 def update_payment_status(order_id: int, payment_status: str):
     order = get_order_by_id(order_id)
@@ -52,6 +45,7 @@ def update_payment_status(order_id: int, payment_status: str):
         order["status"] = "CANCELADO"
     else:
         order["status"] = "PAGAMENTO_PENDENTE"
+    order = order_repository.update_status(order_id, order["status"])
     publish("order.status.updated", {"order_id": order_id, "status": order["status"]})
     return order
 
@@ -64,29 +58,28 @@ def advance_status(order_id: int, status: str):
     order = get_order_by_id(order_id)
     if status not in allowed.get(order["status"], set()):
         raise HTTPException(409, "Transição de status não permitida")
-    order["status"] = status
+    order = order_repository.update_status(order_id, status)
     publish("order.status.updated", {"order_id": order_id, "status": status})
     return order
 
 def get_order_by_id(order_id):
-    for order in orders:
-        if order["id"] == order_id:
-            return order
-    raise HTTPException(404, "Order not found")
+    order = order_repository.get_by_id(order_id)
+    if order is None:
+        raise HTTPException(404, "Order not found")
+    return order
 
 def update_order(order_id, items):
     get_order_by_id(order_id)
     resolved = _resolve_items(items)
-    with _lock:
-        order = get_order_by_id(order_id)
-        if order["status"] != "CRIADO":
-            raise HTTPException(409, "Este pedido não pode ser alterado")
-        order.update(items=resolved,
-            total=float(sum(Decimal(str(item["subtotal"])) for item in resolved)))
+    if get_order_by_id(order_id)["status"] != "CRIADO":
+        raise HTTPException(409, "Este pedido não pode ser alterado")
+    order = order_repository.update_items(order_id, resolved,
+        float(sum(Decimal(str(item["subtotal"])) for item in resolved)))
+    if order is None:
+        raise HTTPException(409, "Este pedido não pode ser alterado")
     return order
 
 def delete_order(order_id):
-    with _lock:
-        order = get_order_by_id(order_id)
-        orders.remove(order)
+    if order_repository.delete(order_id) is None:
+        raise HTTPException(404, "Order not found")
     return {"message": "Order deleted successfully"}

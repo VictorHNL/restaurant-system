@@ -5,6 +5,7 @@ import logging
 
 from app.routes.order_routes import router
 from app.consumers import start_consumer
+from app.repositories.order_repository import init_db
 
 
 logging.basicConfig(
@@ -20,6 +21,7 @@ app.add_middleware(CORSMiddleware, allow_origins=os.getenv("CORS_ORIGINS", "http
 app.include_router(router)
 @app.on_event("startup")
 def start():
+    init_db()
     start_consumer()
 
 

@@ -4,3 +4,4 @@ httpx
 pytest
 pytest-mock
 pika
+psycopg[binary]==3.2.13

@@ -14,6 +14,7 @@ O projeto possui os seguintes serviços:
 | User Service | 8002 | Cadastro, login e emissão do token de acesso. |
 | Payment Service | 8003 | Simulação do processamento de pagamento. |
 | Notification Service | 8004 | Registro dos eventos que gerariam notificações ao cliente. |
+| PostgreSQL | 5432 | Armazenamento persistente de catálogo, contas e pedidos. |
 | RabbitMQ | 5672 / 15672 | Comunicação assíncrona entre os serviços. |
 
 ## Fluxo de um pedido
@@ -41,7 +42,7 @@ Com Docker Desktop aberto, na raiz do projeto execute:
 docker compose up --build -d
 ```
 
-O Docker inicia o frontend, os microsserviços e o RabbitMQ. Depois abra `http://127.0.0.1:5178`.
+O Docker inicia o PostgreSQL, o frontend, os microsserviços e o RabbitMQ. Os dados do banco são mantidos no volume `postgres-data`, mesmo quando os contêineres são recriados. O catálogo de demonstração é inserido apenas na primeira inicialização do schema. Depois abra `http://127.0.0.1:5178`.
 
 Para encerrar os contêineres:
 
@@ -96,7 +97,7 @@ Sem o Docker, Product, User, Order e Frontend funcionam normalmente. Para usar o
 
 ## Estado atual e próximos passos
 
-- O catálogo, usuários, pedidos, pagamentos simulados e notificações estão armazenados em memória. Eles serão integrados ao banco de dados desenvolvido pelo outro integrante.
+- Catálogo, contas e pedidos são persistidos no PostgreSQL. Pagamentos e notificações continuam simulados e usam RabbitMQ.
 - O Payment Service ainda é uma simulação; não há cobrança real.
 - O Notification Service registra eventos, mas ainda não envia e-mails, mensagens ou notificações visuais.
 - Para produção, os segredos devem ficar em variáveis de ambiente seguras e a autenticação deve ser reforçada.
